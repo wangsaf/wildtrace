@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import FeedZone from '@/components/FeedZone';
 
-interface Species { id: number; name: string; scientific_name: string; habitat: string; status: string; population: number; description: string; feed_count: number; }
+interface Species { id: number; name: string; scientific_name: string; habitat: string; status: string; population: number; description: string; feed_count: number; image: string | null; }
 interface Sighting { id: number; reporter_name: string; location: string; notes: string; created_at: string; }
 
 const statusMap: Record<string, { l: string; c: string }> = {
@@ -14,8 +14,12 @@ const statusMap: Record<string, { l: string; c: string }> = {
   least_concern: { l: 'Least Concern', c: 'tag-safe' },
 };
 
-const emoji: Record<string, string> = { forest: '🐅', ocean: '🐋', arctic: '❄️', savanna: '🦁', rainforest: '🦎' };
 const bg: Record<string, string> = { forest: '#dcfce7', ocean: '#dbeafe', arctic: '#f1f5f9', savanna: '#ffedd5', rainforest: '#fef9c3' };
+
+function getSpriteSheet(image: string | null): string | null {
+  if (!image) return null;
+  return image.replace('/thumbs/', '/sheets/').replace('_thumb.webp', '_sheet.png');
+}
 
 export default function SpeciesDetailPage() {
   const params = useParams();
@@ -23,6 +27,7 @@ export default function SpeciesDetailPage() {
   const [species, setSpecies] = useState<Species | null>(null);
   const [sightings, setSightings] = useState<Sighting[]>([]);
   const [loading, setLoading] = useState(true);
+  const [feedCount, setFeedCount] = useState(0);
 
   useEffect(() => {
     if (!params.id) return;
@@ -32,6 +37,7 @@ export default function SpeciesDetailPage() {
     ]).then(([speciesData, sightingsData]) => {
       const sp = speciesData.find((s: Species) => s.id === parseInt(params.id as string));
       setSpecies(sp || null);
+      if (sp) setFeedCount(sp.feed_count || 0);
       setSightings(sightingsData.filter((s: any) => s.species_id === parseInt(params.id as string)));
       setLoading(false);
     }).catch(() => setLoading(false));
@@ -47,17 +53,17 @@ export default function SpeciesDetailPage() {
   );
 
   const st = statusMap[species.status] || statusMap.least_concern;
+  const spriteSheet = getSpriteSheet(species.image);
 
   return (
     <div className="pattern-dots min-h-screen">
-      {/* Hero */}
-      <section className="py-16 px-6" style={{ background: bg[species.habitat] || '#fff' }}>
-        <div className="section-inner" style={{ maxWidth: 800 }}>
-          <div className="text-center">
-            <div className="text-8xl mb-4">{emoji[species.habitat] || '🐾'}</div>
-            <h1 className="text-[clamp(2.5rem,5vw,3.5rem)] text-[var(--text)] mb-2">{species.name}</h1>
-            <p className="text-[var(--text-soft)] italic font-bold">{species.scientific_name}</p>
-            <div className="mt-4 inline-block tag ${st.c}">{st.l}</div>
+      {/* Header */}
+      <section className="pt-10 pb-4 px-6" style={{ background: bg[species.habitat] || '#fff' }}>
+        <div className="section-inner text-center" style={{ maxWidth: 800 }}>
+          <h1 className="text-[clamp(2rem,5vw,3rem)] text-[var(--text)] mb-1">{species.name}</h1>
+          <p className="text-[var(--text-soft)] italic font-bold text-sm">{species.scientific_name}</p>
+          <div className="mt-3">
+            <span className={`tag ${st.c}`}>{st.l}</span>
           </div>
         </div>
       </section>
@@ -65,7 +71,7 @@ export default function SpeciesDetailPage() {
       <section className="section">
         <div className="section-inner" style={{ maxWidth: 800 }}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Info */}
+            {/* Left: Info */}
             <div className="space-y-6">
               <div className="card p-6">
                 <h2 className="text-xl font-bold mb-4">📊 Stats</h2>
@@ -75,7 +81,7 @@ export default function SpeciesDetailPage() {
                     <div className="stat-label">Population</div>
                   </div>
                   <div className="text-center p-4 rounded-xl" style={{ background: '#fef9c3' }}>
-                    <div className="stat-value text-2xl">{species.feed_count || 0}</div>
+                    <div className="stat-value text-2xl">{feedCount}</div>
                     <div className="stat-label">Times Fed</div>
                   </div>
                 </div>
@@ -96,12 +102,21 @@ export default function SpeciesDetailPage() {
               </div>
             </div>
 
-            {/* Feed Zone */}
-            <div>
-              <div className="card p-6">
-                <h2 className="text-xl font-bold mb-4">🍽️ Feed {species.name}</h2>
-                <FeedZone speciesId={species.id} speciesName={species.name} />
+            {/* Right: Character + Feed unified */}
+            <div className="card p-6">
+              <h2 className="text-xl font-bold mb-2 text-center">🍽️ Feed {species.name}</h2>
+
+              <div className="text-center mb-4">
+                <span className="text-2xl font-bold text-[var(--green)]">{feedCount}</span>
+                <span className="text-sm text-[var(--text-muted)] font-bold ml-1">Total Feeds</span>
               </div>
+
+              {/* Unified: sprite + food items */}
+              <FeedZone
+                speciesId={species.id}
+                speciesName={species.name}
+                spriteSheet={spriteSheet}
+              />
             </div>
           </div>
 

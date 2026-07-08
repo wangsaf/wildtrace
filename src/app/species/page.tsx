@@ -3,17 +3,15 @@
 import { useEffect, useState } from 'react';
 import { Search } from 'lucide-react';
 
-interface Species { id: number; name: string; scientific_name: string; habitat: string; status: string; population: number; description: string; }
+interface Species { id: number; name: string; scientific_name: string; habitat: string; status: string; population: number; description: string; image: string | null; }
 
 const statusMap: Record<string, { l: string; c: string }> = {
-  critically_endangered: { l: 'Critically Endangered', c: 'tag-critical' },
-  endangered: { l: 'Endangered', c: 'tag-endangered' },
-  vulnerable: { l: 'Vulnerable', c: 'tag-vulnerable' },
-  least_concern: { l: 'Least Concern', c: 'tag-safe' },
+  critically_endangered: { l: 'CRITICAL', c: 'tag-critical' },
+  endangered: { l: 'ENDANGERED', c: 'tag-endangered' },
+  vulnerable: { l: 'VULNERABLE', c: 'tag-vulnerable' },
+  least_concern: { l: 'SAFE', c: 'tag-safe' },
 };
-const emoji: Record<string, string> = { forest: '🐅', ocean: '🐋', arctic: '❄️' };
-const bg: Record<string, string> = { forest: '#dcfce7', ocean: '#dbeafe', arctic: '#f1f5f9' };
-const border: Record<string, string> = { forest: '#86efac', ocean: '#93c5fd', arctic: '#cbd5e1' };
+const habitatBg: Record<string, string> = { forest: '#c8e8a8', ocean: '#a8c8e8', arctic: '#d8d8e8', savanna: '#e8d8a8', rainforest: '#b8e8c8' };
 
 export default function SpeciesPage() {
   const [species, setSpecies] = useState<Species[]>([]);
@@ -35,24 +33,25 @@ export default function SpeciesPage() {
     <div className="pattern-dots min-h-screen">
       <section className="section">
         <div className="section-inner">
-          <div className="badge badge-green mb-4">🦁 Biodiversity</div>
-          <h1 className="text-[clamp(2.5rem,5vw,3.5rem)] text-[var(--text)] mb-4">Species Directory</h1>
-          <p className="text-[var(--text-secondary)] font-semibold max-w-lg mb-10">
-            Meet the amazing animals we&apos;re tracking around the world! 🌍
+          <div className="badge badge-green mb-4">SPECIES DIRECTORY</div>
+          <h1 className="mb-4" style={{ fontSize: 'clamp(1rem, 3vw, 1.5rem)' }}>ALL SPECIES</h1>
+          <p className="max-w-lg mb-10" style={{ fontFamily: 'VT323', fontSize: '20px', color: 'var(--text-soft)' }}>
+            Meet the amazing animals we&apos;re tracking around the world!
           </p>
 
           {/* Filters */}
           <div className="flex flex-col sm:flex-row gap-3 mb-10">
             <div className="flex-1 relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
-              <input type="text" placeholder="Search species... 🔍" value={search} onChange={e => setSearch(e.target.value)} className="input pl-11" />
+              <input type="text" placeholder="SEARCH SPECIES..." value={search} onChange={e => setSearch(e.target.value)} className="input pl-11" />
             </div>
             <div className="flex gap-2">
-              {[{ k: 'all', l: '🌈 All' }, { k: 'forest', l: '🌲 Forest' }, { k: 'ocean', l: '🌊 Ocean' }, { k: 'arctic', l: '❄️ Arctic' }].map(h => (
+              {[{ k: 'all', l: 'ALL' }, { k: 'forest', l: 'FOREST' }, { k: 'ocean', l: 'OCEAN' }, { k: 'arctic', l: 'ARCTIC' }].map(h => (
                 <button key={h.k} onClick={() => setFilter(h.k)}
-                  className={`px-4 py-2.5 rounded-2xl text-sm font-bold transition-all duration-300 border-2 ${
-                    filter === h.k ? 'bg-[var(--green-bg)] text-[var(--green)] border-[#86efac]' : 'text-[var(--text-muted)] border-transparent hover:border-[var(--border)]'
-                  }`}>
+                  className={`px-4 py-2.5 text-xs transition-all duration-100 border-3 ${
+                    filter === h.k ? 'bg-[var(--gb-mid)] text-[var(--gb-darkest)] border-[var(--outline)]' : 'text-[var(--text-muted)] border-transparent hover:border-[var(--outline)]'
+                  }`}
+                  style={{ fontFamily: 'Press Start 2P', fontSize: '8px' }}>
                   {h.l}
                 </button>
               ))}
@@ -61,26 +60,30 @@ export default function SpeciesPage() {
 
           {/* Grid */}
           {loading ? (
-            <div className="text-center py-20 text-[var(--text-muted)] font-bold">Loading... ⏳</div>
+            <div className="text-center py-20" style={{ fontFamily: 'Press Start 2P', fontSize: '10px', color: 'var(--text-muted)' }}>LOADING...</div>
           ) : filtered.length === 0 ? (
-            <div className="text-center py-20 text-[var(--text-muted)] font-bold">No species found 😢</div>
+            <div className="text-center py-20" style={{ fontFamily: 'Press Start 2P', fontSize: '10px', color: 'var(--text-muted)' }}>NO SPECIES FOUND</div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {filtered.map(s => {
                 const st = statusMap[s.status] || statusMap.least_concern;
                 return (
-                  <a key={s.id} href={`/species/${s.id}`} className="card block group" style={{ background: bg[s.habitat] || '#fff', borderColor: border[s.habitat] || 'var(--border)' }}>
-                    <div className="p-6">
-                      <div className="flex items-start justify-between mb-4">
-                        <span className="text-5xl group-hover:scale-125 transition-transform duration-300">{emoji[s.habitat] || '🐾'}</span>
+                  <a key={s.id} href={`/species/${s.id}`} className="card block group" style={{ background: habitatBg[s.habitat] || '#e8e0c8' }}>
+                    <div className="p-5">
+                      <div className="flex items-start justify-between mb-3">
+                        {s.image ? (
+                          <img src={s.image} alt={s.name} className="w-16 h-16 border-3 border-[var(--outline)] object-cover" loading="lazy" style={{ imageRendering: 'pixelated' }} />
+                        ) : (
+                          <div className="w-16 h-16 border-3 border-[var(--outline)] flex items-center justify-center text-3xl" style={{ background: 'var(--surface)' }}>🐾</div>
+                        )}
                         <span className={`tag ${st.c}`}>{st.l}</span>
                       </div>
-                      <h3 className="text-lg font-bold text-[var(--text)] mb-0.5">{s.name}</h3>
-                      <p className="text-xs text-[var(--text-muted)] font-bold italic mb-3">{s.scientific_name}</p>
-                      <p className="text-sm text-[var(--text-secondary)] font-semibold line-clamp-2 mb-4">{s.description}</p>
-                      <div className="flex items-center justify-between pt-3 border-t-2 border-[var(--border)]">
-                        <span className="text-xs font-bold capitalize" style={{ color: s.habitat === 'forest' ? '#15803d' : s.habitat === 'ocean' ? '#1d4ed8' : '#475569' }}>{s.habitat}</span>
-                        <span className="text-xs text-[var(--text-muted)] font-bold">Pop: {s.population?.toLocaleString() || '?'}</span>
+                      <h3 style={{ fontSize: '10px' }}>{s.name}</h3>
+                      <p style={{ fontFamily: 'VT323', fontSize: '14px', color: 'var(--text-muted)' }} className="italic">{s.scientific_name}</p>
+                      <p className="mt-2 line-clamp-2" style={{ fontFamily: 'VT323', fontSize: '16px', color: 'var(--text-soft)' }}>{s.description}</p>
+                      <div className="flex items-center justify-between mt-3 pt-3 border-t-3 border-[var(--outline)]">
+                        <span style={{ fontFamily: 'Press Start 2P', fontSize: '7px', color: 'var(--text-soft)' }}>{s.habitat.toUpperCase()}</span>
+                        <span style={{ fontFamily: 'VT323', fontSize: '16px', color: 'var(--text-muted)' }}>POP: {s.population?.toLocaleString() || '?'}</span>
                       </div>
                     </div>
                   </a>
