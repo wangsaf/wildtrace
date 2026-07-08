@@ -28,7 +28,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               {[
                 { href: '/species', label: '🦁 Species' },
                 { href: '/sightings', label: '📡 Sightings' },
-                { href: '/dashboard', label: '📊 Dashboard' },
+                { href: '/leaderboard', label: '🏆 Leaderboard' },
+              { href: '/dashboard', label: '📊 Dashboard' },
               ].map(l => (
                 <a key={l.href} href={l.href}
                    className="px-3 py-1.5 text-sm font-bold text-[var(--text-soft)] hover:text-[var(--text)] transition-colors rounded-lg hover:bg-white/50">
