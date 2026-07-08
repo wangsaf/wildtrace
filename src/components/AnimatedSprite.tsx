@@ -1,118 +1,98 @@
 'use client';
 
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 
 interface AnimatedSpriteProps {
   sheetSrc: string;
-  alt: string;
+  alt?: string;
   size?: number;
   eating?: boolean;
+  cols?: number;
+  rows?: number;
+  className?: string;
 }
 
-const FRAMES = {
-  idle:    [0, 1, 2, 3],
-  blink:   [4, 5],
-  breathe: [6, 7, 8, 9],
-  eat:     [12, 13, 14, 15],
-  happy:   [16, 17],
-  wave:    [18, 19],
+// Animation states with slow, natural speeds
+const ANIMATIONS: Record<string, { startFrame: number; count: number; speed: number }> = {
+  idle:    { startFrame: 0, count: 4, speed: 900 },
+  walk:    { startFrame: 4, count: 6, speed: 250 },
+  eat:     { startFrame: 10, count: 4, speed: 400 },
+  happy:   { startFrame: 14, count: 4, speed: 350 },
+  hurt:    { startFrame: 18, count: 2, speed: 300 },
+  special: { startFrame: 20, count: 4, speed: 450 },
 };
 
-const COLS = 5;
-
-export default function AnimatedSprite({ sheetSrc, alt, size = 256, eating }: AnimatedSpriteProps) {
+export default function AnimatedSprite({
+  sheetSrc,
+  alt = 'Sprite',
+  size = 200,
+  eating = false,
+  cols = 6,
+  rows = 4,
+  className = '',
+}: AnimatedSpriteProps) {
   const [currentFrame, setCurrentFrame] = useState(0);
-  const [isHovered, setIsHovered] = useState(false);
-  const [showHearts, setShowHearts] = useState(false);
-  const animRef = useRef<NodeJS.Timeout | null>(null);
+  const [animState, setAnimState] = useState<string>('idle');
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const getFramePosition = (frameIndex: number) => {
-    const col = frameIndex % COLS;
-    const row = Math.floor(frameIndex / COLS);
-    return {
-      x: (col / (COLS - 1)) * 100,
-      y: (row / 3) * 100,
-    };
-  };
-
-  const playAnimation = useCallback((frames: number[], speed = 300, loop = false) => {
-    if (animRef.current) clearInterval(animRef.current);
-    let idx = 0;
-    setCurrentFrame(frames[0]);
-    animRef.current = setInterval(() => {
-      idx++;
-      if (idx >= frames.length) {
-        if (loop) { idx = 0; }
-        else { clearInterval(animRef.current!); return; }
-      }
-      setCurrentFrame(frames[idx % frames.length]);
-    }, speed);
-  }, []);
-
-  // Idle cycle with random events
-  useEffect(() => {
-    playAnimation(FRAMES.idle, 800, true);
-
-    const randomEvent = setInterval(() => {
-      if (eating) return;
-      const rand = Math.random();
-      if (rand < 0.3) playAnimation(FRAMES.blink, 200);
-      else if (rand < 0.5) playAnimation(FRAMES.breathe, 400);
-    }, 4000);
-
-    return () => {
-      clearInterval(randomEvent);
-      if (animRef.current) clearInterval(animRef.current);
-    };
-  }, [playAnimation, eating]);
-
-  // Eating prop triggers eat animation
+  // Switch to eating when prop changes
   useEffect(() => {
     if (eating) {
-      playAnimation(FRAMES.eat, 250);
+      setAnimState('eat');
+      const eatAnim = ANIMATIONS.eat;
+      setTimeout(() => setAnimState('idle'), eatAnim.speed * eatAnim.count);
     }
-  }, [eating, playAnimation]);
+  }, [eating]);
 
-  const handleClick = () => {
-    playAnimation(FRAMES.happy, 300);
-    setShowHearts(true);
-    setTimeout(() => setShowHearts(false), 1500);
-  };
+  // Animation loop
+  useEffect(() => {
+    const anim = ANIMATIONS[animState] || ANIMATIONS.idle;
+    const frames = Array.from({ length: anim.count }, (_, i) => anim.startFrame + i);
 
-  const pos = getFramePosition(currentFrame);
+    let frameIdx = 0;
+    setCurrentFrame(frames[0]);
+
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
+      frameIdx = (frameIdx + 1) % frames.length;
+      setCurrentFrame(frames[frameIdx]);
+    }, anim.speed);
+
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [animState]);
+
+  // Background position calculation
+  const col = currentFrame % cols;
+  const row = Math.floor(currentFrame / cols);
+  const bgX = cols > 1 ? (col / (cols - 1)) * 100 : 0;
+  const bgY = rows > 1 ? (row / (rows - 1)) * 100 : 0;
 
   return (
     <div
-      className="relative inline-block cursor-pointer select-none"
-      onMouseEnter={() => {
-        setIsHovered(true);
-        if (!eating) playAnimation(FRAMES.wave, 300);
+      className={`inline-block ${className}`}
+      style={{
+        width: size,
+        height: size,
+        backgroundImage: `url(${sheetSrc})`,
+        backgroundSize: `${cols * 100}% ${rows * 100}%`,
+        backgroundPosition: `${bgX}% ${bgY}%`,
+        backgroundRepeat: 'no-repeat',
+        imageRendering: 'pixelated',
+        cursor: 'pointer',
       }}
-      onMouseLeave={() => setIsHovered(false)}
-      onClick={handleClick}
-    >
-      {showHearts && (
-        <div className="absolute -top-8 left-1/2 -translate-x-1/2 flex gap-1 animate-bounce z-10">
-          {['💕', '💖', '💕'].map((h, i) => (
-            <span key={i} className="text-2xl" style={{ animationDelay: `${i * 100}ms` }}>{h}</span>
-          ))}
-        </div>
-      )}
-
-      <div
-        className="rounded-3xl shadow-lg border-4 border-white transition-transform duration-200"
-        style={{
-          width: size,
-          height: size,
-          backgroundImage: `url(${sheetSrc})`,
-          backgroundSize: `${COLS * 100}% ${4 * 100}%`,
-          backgroundPosition: `${pos.x}% ${pos.y}%`,
-          backgroundRepeat: 'no-repeat',
-          transform: isHovered ? 'scale(1.05)' : 'scale(1)',
-          imageRendering: 'auto',
-        }}
-        title={`Click ${alt}!`}
-      />
-    </div>
+      onClick={() => {
+        setAnimState('happy');
+        setTimeout(() => setAnimState('idle'), ANIMATIONS.happy.speed * ANIMATIONS.happy.count);
+      }}
+      onMouseEnter={() => {
+        if (!eating) setAnimState('walk');
+      }}
+      onMouseLeave={() => {
+        if (!eating) setAnimState('idle');
+      }}
+      title={alt}
+    />
   );
 }
