@@ -1,32 +1,18 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Search, TreePine, Waves, Snowflake } from 'lucide-react';
+import { Search } from 'lucide-react';
 
-interface Species {
-  id: number; name: string; scientific_name: string; habitat: string;
-  status: string; population: number; description: string;
-}
+interface Species { id: number; name: string; scientific_name: string; habitat: string; status: string; population: number; description: string; }
 
-const statusMap: Record<string, { label: string; cls: string }> = {
-  critically_endangered: { label: 'Critically Endangered', cls: 'status-critical' },
-  endangered: { label: 'Endangered', cls: 'status-endangered' },
-  vulnerable: { label: 'Vulnerable', cls: 'status-vulnerable' },
-  least_concern: { label: 'Least Concern', cls: 'status-safe' },
+const statusMap: Record<string, { l: string; c: string }> = {
+  critically_endangered: { l: 'Critically Endangered', c: 'tag-critical' },
+  endangered: { l: 'Endangered', c: 'tag-endangered' },
+  vulnerable: { l: 'Vulnerable', c: 'tag-vulnerable' },
+  least_concern: { l: 'Least Concern', c: 'tag-safe' },
 };
-
-const habitatIcons: Record<string, React.ReactNode> = {
-  forest: <TreePine className="w-3.5 h-3.5" />,
-  ocean: <Waves className="w-3.5 h-3.5" />,
-  arctic: <Snowflake className="w-3.5 h-3.5" />,
-};
-
-const habitatEmoji: Record<string, string> = { forest: '🐅', ocean: '🐋', arctic: '❄️' };
-const habitatAccent: Record<string, string> = {
-  forest: 'from-emerald-900/30 to-emerald-950/10',
-  ocean: 'from-blue-900/30 to-blue-950/10',
-  arctic: 'from-slate-700/30 to-slate-900/10',
-};
+const emoji: Record<string, string> = { forest: '🐅', ocean: '🐋', arctic: '❄️' };
+const accent: Record<string, string> = { forest: '#22c55e', ocean: '#3b82f6', arctic: '#94a3b8' };
 
 export default function SpeciesPage() {
   const [species, setSpecies] = useState<Species[]>([]);
@@ -39,99 +25,68 @@ export default function SpeciesPage() {
   }, []);
 
   const filtered = species.filter(s => {
-    const matchH = filter === 'all' || s.habitat === filter;
-    const matchS = s.name.toLowerCase().includes(search.toLowerCase()) || s.scientific_name.toLowerCase().includes(search.toLowerCase());
-    return matchH && matchS;
+    const h = filter === 'all' || s.habitat === filter;
+    const q = s.name.toLowerCase().includes(search.toLowerCase()) || s.scientific_name.toLowerCase().includes(search.toLowerCase());
+    return h && q;
   });
 
   return (
-    <div className="min-h-screen gradient-bg py-16 px-6">
-      <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <span className="badge badge-green mb-4 inline-flex">Biodiversity</span>
-          <h1 className="text-4xl md:text-5xl font-bold text-white mt-4"
-              style={{ fontFamily: 'Playfair Display, serif' }}>
-            Species Directory
-          </h1>
-          <p className="text-slate-500 mt-3 max-w-lg mx-auto text-sm">
-            Browse all tracked species across our three monitored habitats.
-          </p>
-        </div>
+    <div className="min-h-screen">
+      <section className="section">
+        <div className="section-inner">
+          <p className="label mb-4">Biodiversity</p>
+          <h1 className="display text-[clamp(2.5rem,5vw,4rem)] text-white mb-4">Species Directory</h1>
+          <p className="body-lg max-w-lg mb-12">Browse all tracked species across our three monitored habitats.</p>
 
-        {/* Filters */}
-        <div className="flex flex-col sm:flex-row gap-3 mb-10">
-          <div className="flex-1 relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-            <input type="text" placeholder="Search species..." value={search}
-              onChange={e => setSearch(e.target.value)}
-              className="input-glass pl-11" />
+          {/* Filters */}
+          <div className="flex flex-col sm:flex-row gap-3 mb-10">
+            <div className="flex-1 relative">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
+              <input type="text" placeholder="Search species..." value={search} onChange={e => setSearch(e.target.value)} className="input pl-11" />
+            </div>
+            <div className="flex gap-2">
+              {[{ k: 'all', l: 'All' }, { k: 'forest', l: 'Forest' }, { k: 'ocean', l: 'Ocean' }, { k: 'arctic', l: 'Arctic' }].map(h => (
+                <button key={h.k} onClick={() => setFilter(h.k)}
+                  className={`px-4 py-2.5 rounded-lg text-[13px] font-medium transition-all duration-300 border ${
+                    filter === h.k ? 'bg-white/[0.06] text-white border-white/10' : 'text-[var(--text-muted)] border-transparent hover:text-[var(--text-secondary)]'
+                  }`}>
+                  {h.l}
+                </button>
+              ))}
+            </div>
           </div>
-          <div className="flex gap-2">
-            {[
-              { key: 'all', label: 'All', icon: null },
-              { key: 'forest', label: 'Forest', icon: <TreePine className="w-3.5 h-3.5" /> },
-              { key: 'ocean', label: 'Ocean', icon: <Waves className="w-3.5 h-3.5" /> },
-              { key: 'arctic', label: 'Arctic', icon: <Snowflake className="w-3.5 h-3.5" /> },
-            ].map(h => (
-              <button key={h.key} onClick={() => setFilter(h.key)}
-                className={`px-4 py-3 rounded-xl flex items-center gap-2 text-sm font-medium transition-all duration-300 ${
-                  filter === h.key
-                    ? 'glass bg-white/[0.06] text-white border-white/15'
-                    : 'text-slate-500 hover:text-slate-300'
-                }`}>
-                {h.icon}<span>{h.label}</span>
-              </button>
-            ))}
-          </div>
-        </div>
 
-        {/* Grid */}
-        {loading ? (
-          <div className="text-center py-20 text-slate-600">Loading species...</div>
-        ) : filtered.length === 0 ? (
-          <div className="text-center py-20 text-slate-600">No species found.</div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {filtered.map((s, i) => {
-              const st = statusMap[s.status] || statusMap.least_concern;
-              return (
-                <a key={s.id} href={`/species/${s.id}`} className="group block">
-                  <div className="glass overflow-hidden" style={{ animationDelay: `${i * 0.05}s` }}>
-                    {/* Habitat header */}
-                    <div className={`h-28 bg-gradient-to-b ${habitatAccent[s.habitat]} relative flex items-center justify-center overflow-hidden`}>
-                      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,_rgba(255,255,255,0.05)_0%,_transparent_60%)]" />
-                      <span className="text-5xl group-hover:scale-125 transition-transform duration-500 relative z-10">
-                        {habitatEmoji[s.habitat] || '🐾'}
-                      </span>
-                      <div className="absolute top-3 right-3">
-                        <span className={`badge text-[10px] ${st.cls}`}>{st.label}</span>
+          {/* Grid */}
+          {loading ? (
+            <div className="text-center py-20 text-[var(--text-muted)]">Loading...</div>
+          ) : filtered.length === 0 ? (
+            <div className="text-center py-20 text-[var(--text-muted)]">No species found.</div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filtered.map(s => {
+                const st = statusMap[s.status] || statusMap.least_concern;
+                return (
+                  <a key={s.id} href={`/species/${s.id}`} className="card block group">
+                    <div className="p-6">
+                      <div className="flex items-start justify-between mb-5">
+                        <span className="text-3xl">{emoji[s.habitat] || '🐾'}</span>
+                        <span className={`tag ${st.c}`}>{st.l}</span>
+                      </div>
+                      <h3 className="text-base font-bold text-white mb-0.5 group-hover:opacity-80 transition-opacity">{s.name}</h3>
+                      <p className="text-[12px] text-[var(--text-muted)] italic mb-3">{s.scientific_name}</p>
+                      <p className="body-sm line-clamp-2 mb-5">{s.description}</p>
+                      <div className="flex items-center justify-between pt-4 border-t border-[var(--border)]">
+                        <span className="text-xs capitalize" style={{ color: accent[s.habitat] || 'var(--text-muted)' }}>{s.habitat}</span>
+                        <span className="text-xs text-[var(--text-muted)] font-mono">{s.population?.toLocaleString() || '?'}</span>
                       </div>
                     </div>
-
-                    {/* Content */}
-                    <div className="p-5">
-                      <h3 className="text-base font-bold text-white mb-0.5 group-hover:text-emerald-300 transition-colors">
-                        {s.name}
-                      </h3>
-                      <p className="text-slate-600 text-xs italic mb-3">{s.scientific_name}</p>
-                      <p className="text-slate-400 text-xs line-clamp-2 mb-4 leading-relaxed">{s.description}</p>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-1.5 text-slate-500 text-xs">
-                          {habitatIcons[s.habitat]}<span className="capitalize">{s.habitat}</span>
-                        </div>
-                        <div className="text-xs text-slate-600 font-mono">
-                          Pop: {s.population?.toLocaleString() || '?'}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </a>
-              );
-            })}
-          </div>
-        )}
-      </div>
+                  </a>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </section>
     </div>
   );
 }

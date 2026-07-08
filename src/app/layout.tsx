@@ -13,17 +13,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet" />
       </head>
-      <body className="antialiased">
+      <body>
         <CustomCursor habitat="forest" />
-        <nav className="fixed top-0 left-0 right-0 z-50 nav-glass">
-          <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
+
+        <nav className="topbar">
+          <div className="section-inner flex items-center justify-between h-14 px-6">
             <a href="/" className="flex items-center gap-2 group">
-              <span className="text-lg group-hover:scale-110 transition-transform">🐾</span>
-              <span className="font-bold text-sm text-white tracking-wide" style={{ fontFamily: 'Playfair Display, serif' }}>
-                WildTrace
-              </span>
+              <span className="text-base group-hover:scale-110 transition-transform duration-300">🐾</span>
+              <span className="text-sm font-bold text-white tracking-wide" style={{ fontFamily: 'Playfair Display, serif' }}>WildTrace</span>
             </a>
             <div className="flex items-center gap-1">
               {[
@@ -32,17 +31,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 { href: '/dashboard', label: 'Dashboard' },
               ].map(l => (
                 <a key={l.href} href={l.href}
-                   className="px-3 py-1.5 text-xs text-slate-400 hover:text-white transition-colors rounded-lg hover:bg-white/5">
+                   className="px-3 py-1.5 text-[13px] text-[var(--text-secondary)] hover:text-white transition-colors rounded-lg hover:bg-white/[0.03]">
                   {l.label}
                 </a>
               ))}
-              <a href="/sightings/new"
-                 className="ml-2 px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs rounded-lg font-medium transition-colors">
+              <a href="/sightings/new" className="btn btn-primary ml-3 !py-1.5 !px-4 !text-[13px]">
                 Report
               </a>
             </div>
           </div>
         </nav>
+
         <main className="pt-14">{children}</main>
       </body>
     </html>
