@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import GsapTiger from '@/components/GsapTiger';
 import AnimatedSprite from '@/components/AnimatedSprite';
 
 interface FoodItem {
@@ -37,7 +38,7 @@ export default function FeedZone({ speciesId, speciesName, spriteBasePath }: Fee
 
     // Trigger eating animation
     setEating(true);
-    setTimeout(() => setEating(false), 1500);
+    setTimeout(() => setEating(false), 3000);
 
     // Spawn hearts
     const newHearts = Array.from({ length: 5 }, () => ({ id: heartIdRef.current++ }));
@@ -75,6 +76,9 @@ export default function FeedZone({ speciesId, speciesName, spriteBasePath }: Fee
     }, 5000);
   };
 
+  // Determine which character to show
+  const isTiger = speciesName.toLowerCase().includes('tiger');
+
   return (
     <div>
       {/* Character = drop target */}
@@ -94,7 +98,7 @@ export default function FeedZone({ speciesId, speciesName, spriteBasePath }: Fee
         {dragOver && (
           <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
             <div className="bg-[var(--green)] text-white px-4 py-2 rounded-full font-bold text-sm shadow-lg animate-pulse">
-              Drop here! 🍽️
+              Drop here!
             </div>
           </div>
         )}
@@ -115,7 +119,9 @@ export default function FeedZone({ speciesId, speciesName, spriteBasePath }: Fee
         ))}
 
         {/* The character */}
-        {spriteBasePath ? (
+        {isTiger ? (
+          <GsapTiger size={280} eating={eating} />
+        ) : spriteBasePath ? (
           <AnimatedSprite
             basePath={spriteBasePath}
             alt={speciesName}
