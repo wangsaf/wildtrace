@@ -1,0 +1,20 @@
+{
+  "projectId": "091ba688-6ca5-41fb-a6b0-865986962bed",
+  "type": "frontend",
+  "name": "Species gallery with filter and search",
+  "planSteps": [
+    { "type": "action", "description": "Navigate to https://wildtrace.spectriad.com/species" },
+    { "type": "assertion", "description": "The page title contains 'Species Directory'" },
+    { "type": "assertion", "description": "Species cards are displayed including Sumatran Tiger, Blue Whale, and Snow Leopard" },
+    { "type": "action", "description": "Click the 'Forest' filter button" },
+    { "type": "assertion", "description": "Sumatran Tiger is visible" },
+    { "type": "assertion", "description": "Blue Whale is not visible" },
+    { "type": "action", "description": "Click the 'Ocean' filter button" },
+    { "type": "assertion", "description": "Blue Whale is visible" },
+    { "type": "assertion", "description": "Sumatran Tiger is not visible" },
+    { "type": "action", "description": "Click the 'All' filter button" },
+    { "type": "assertion", "description": "All species are visible again" },
+    { "type": "action", "description": "Type 'tiger' in the search box" },
+    { "type": "assertion", "description": "Only Sumatran Tiger is visible" }
+  ]
+}

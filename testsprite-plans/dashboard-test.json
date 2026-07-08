@@ -1,0 +1,14 @@
+{
+  "projectId": "091ba688-6ca5-41fb-a6b0-865986962bed",
+  "type": "frontend",
+  "name": "Dashboard displays stats and recent activity",
+  "planSteps": [
+    { "type": "action", "description": "Navigate to https://wildtrace.spectriad.com/dashboard" },
+    { "type": "assertion", "description": "The page loads with title 'Conservation Dashboard'" },
+    { "type": "assertion", "description": "The 'Species Tracked' stat card is visible" },
+    { "type": "assertion", "description": "The 'Total Sightings' stat card is visible" },
+    { "type": "assertion", "description": "The 'Active Reporters' stat card is visible" },
+    { "type": "assertion", "description": "The 'Habitat Breakdown' section shows Forest, Ocean, and Arctic" },
+    { "type": "assertion", "description": "The 'Recent Activity' section is visible" }
+  ]
+}

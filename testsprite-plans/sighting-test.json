@@ -1,0 +1,16 @@
+{
+  "projectId": "091ba688-6ca5-41fb-a6b0-865986962bed",
+  "type": "frontend",
+  "name": "Report sighting form submission",
+  "planSteps": [
+    { "type": "action", "description": "Navigate to https://wildtrace.spectriad.com/sightings/new" },
+    { "type": "assertion", "description": "The form page loads with title 'Report a Sighting'" },
+    { "type": "assertion", "description": "The form has fields: Your Name, Species, Location, Notes" },
+    { "type": "action", "description": "Fill in 'Your Name' field with 'Test User'" },
+    { "type": "action", "description": "Select 'Sumatran Tiger' from the Species dropdown" },
+    { "type": "action", "description": "Fill in 'Location' field with 'Test Location, Indonesia'" },
+    { "type": "action", "description": "Fill in 'Notes' field with 'Test sighting for hackathon validation'" },
+    { "type": "action", "description": "Click the 'Submit Sighting' button" },
+    { "type": "assertion", "description": "A success message 'Sighting Reported!' appears" }
+  ]
+}

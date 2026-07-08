@@ -1,0 +1,19 @@
+{
+  "projectId": "091ba688-6ca5-41fb-a6b0-865986962bed",
+  "type": "frontend",
+  "name": "Landing page loads with parallax and navigation",
+  "planSteps": [
+    { "type": "action", "description": "Navigate to https://wildtrace.spectriad.com" },
+    { "type": "assertion", "description": "The page title contains 'WildTrace'" },
+    { "type": "assertion", "description": "The hero heading 'Protect Wildlife. Track Everything.' is visible" },
+    { "type": "assertion", "description": "The navigation bar shows 'Species', 'Sightings', 'Dashboard', and 'Report Sighting'" },
+    { "type": "action", "description": "Click the 'Species' link in the navigation bar" },
+    { "type": "assertion", "description": "The URL changes to /species" },
+    { "type": "action", "description": "Navigate to https://wildtrace.spectriad.com" },
+    { "type": "action", "description": "Scroll down to the habitats section" },
+    { "type": "assertion", "description": "The 'Three Habitats. One Mission.' heading is visible" },
+    { "type": "assertion", "description": "Three habitat cards 'Forest', 'Ocean', 'Arctic' are visible" },
+    { "type": "assertion", "description": "The 'Recent Sightings' section shows Sumatran Tiger, Blue Whale, and Snow Leopard" },
+    { "type": "assertion", "description": "The 'Every Sighting Counts' CTA section is visible" }
+  ]
+}
