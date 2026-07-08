@@ -44,15 +44,8 @@ jobs:
             echo "Deployed successfully!"
 
       - name: Notify Discord
-        uses: sarisia/actions-discord@v1
-        with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          title: "🚀 WildTrace Deployed"
-          description: |
-            **New version deployed!**
-            
-            Commit: `${{ github.sha }}`
-            Branch: `${{ github.ref_name }}`
-            By: `${{ github.actor }}`
-            
-            [Live Site](https://wildtrace.spectriad.com)
+        if: always()
+        run: |
+          curl -s -H "Content-Type: application/json" \
+            -d '{"embeds":[{"title":"🚀 WildTrace Deployed","description":"**New version deployed!**\n\nCommit: `${{ github.sha }}`\nBranch: `${{ github.ref_name }}`\nBy: `${{ github.actor }}`\n\n[Live Site](https://wildtrace.spectriad.com)","color":3066993}]}' \
+            "${{ secrets.DISCORD_WEBHOOK }}"
