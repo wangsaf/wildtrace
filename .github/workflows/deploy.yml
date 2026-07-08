@@ -1,0 +1,58 @@
+name: Deploy WildTrace to VPS-239
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linter
+        run: npm run lint --if-present
+
+      - name: Build
+        run: npm run build
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      - name: Deploy to VPS-239
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: root
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            cd ~/projects/wildtrace
+            git pull origin master
+            npm ci --production
+            npm run build
+            pm2 restart wildtrace
+            echo "Deployed successfully!"
+
+      - name: Notify Discord
+        uses: sarisia/actions-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          title: "🚀 WildTrace Deployed"
+          description: |
+            **New version deployed!**
+            
+            Commit: `${{ github.sha }}`
+            Branch: `${{ github.ref_name }}`
+            By: `${{ github.actor }}`
+            
+            [Live Site](https://wildtrace.spectriad.com)
