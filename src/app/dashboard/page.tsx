@@ -18,22 +18,36 @@ export default function DashboardPage() {
   const [s, setS] = useState<Stats | null>(null);
   useEffect(() => { fetch('/api/stats').then(r => r.json()).then(setS).catch(() => {}); }, []);
 
-  if (!s) return <div className="min-h-screen pattern-dots flex items-center justify-center text-[var(--text-muted)] font-bold">Loading... ⏳</div>;
+  if (!s) return (
+    <div className="min-h-screen pattern-dots flex items-center justify-center"
+         style={{ fontFamily: "'VT323', monospace", fontSize: '24px', color: 'var(--text-muted)' }}>
+      Loading... ⏳
+    </div>
+  );
+
+  const habitatBg = {
+    forest: 'var(--gb-dark)',
+    ocean: 'var(--nes-blue)',
+    arctic: 'var(--gb-mid)',
+  };
 
   return (
     <div className="pattern-dots min-h-screen">
       <section className="section">
         <div className="section-inner">
           <div className="badge badge-orange mb-4">📊 Analytics</div>
-          <h1 className="text-[clamp(2.5rem,5vw,3.5rem)] text-[var(--text)] mb-10">Conservation Dashboard</h1>
+          <h1 className="text-[clamp(0.8rem,2.5vw,1.4rem)] text-[var(--text)] mb-10"
+              style={{ fontFamily: "'Press Start 2P', cursive", textTransform: 'uppercase' }}>
+            Conservation Dashboard
+          </h1>
 
           <div className="grid grid-cols-3 gap-5 mb-10">
             {[
-              { v: s.species, l: 'Species Tracked', e: '🦁', bg: '#ffedd5', border: '#fdba74' },
-              { v: s.sightings, l: 'Sightings', e: '📍', bg: '#dbeafe', border: '#93c5fd' },
-              { v: s.reporters, l: 'Contributors', e: '👥', bg: '#fce7f3', border: '#f9a8d4' },
+              { v: s.species, l: 'Species Tracked', e: '🦁' },
+              { v: s.sightings, l: 'Sightings', e: '📍' },
+              { v: s.reporters, l: 'Contributors', e: '👥' },
             ].map((x, i) => (
-              <div key={i} className="card text-center" style={{ background: x.bg, borderColor: x.border }}>
+              <div key={i} className="card text-center">
                 <div className="p-8">
                   <div className="text-4xl mb-3">{x.e}</div>
                   <div className="stat-value"><Counter value={x.v} /></div>
@@ -45,17 +59,21 @@ export default function DashboardPage() {
 
           <div className="card mb-8">
             <div className="p-8">
-              <h2 className="text-xl font-bold text-[var(--text)] mb-6">🗺️ Habitat Breakdown</h2>
+              <h2 className="text-sm font-bold text-[var(--text)] mb-6"
+                  style={{ fontFamily: "'Press Start 2P', cursive", textTransform: 'uppercase' }}>
+                🗺️ Habitat Breakdown
+              </h2>
               <div className="grid grid-cols-3 gap-4">
                 {[
-                  { n: 'Forest', e: '🌲', c: s.recent.filter(x => x.habitat === 'forest').length, bg: '#dcfce7', border: '#86efac' },
-                  { n: 'Ocean', e: '🌊', c: s.recent.filter(x => x.habitat === 'ocean').length, bg: '#dbeafe', border: '#93c5fd' },
-                  { n: 'Arctic', e: '❄️', c: s.recent.filter(x => x.habitat === 'arctic').length, bg: '#f1f5f9', border: '#cbd5e1' },
+                  { n: 'Forest', e: '🌲', c: s.recent.filter(x => x.habitat === 'forest').length },
+                  { n: 'Ocean', e: '🌊', c: s.recent.filter(x => x.habitat === 'ocean').length },
+                  { n: 'Arctic', e: '❄️', c: s.recent.filter(x => x.habitat === 'arctic').length },
                 ].map(h => (
-                  <div key={h.n} className="text-center p-5 rounded-2xl border-2" style={{ background: h.bg, borderColor: h.border }}>
+                  <div key={h.n} className="text-center p-5"
+                       style={{ border: '4px solid var(--outline)', background: 'var(--gb-mid)', borderRadius: 0, boxShadow: '4px 4px 0 var(--outline)' }}>
                     <div className="text-3xl mb-2">{h.e}</div>
-                    <div className="text-3xl font-bold text-[var(--text)]">{h.c}</div>
-                    <div className="text-xs text-[var(--text-muted)] font-bold mt-1">{h.n}</div>
+                    <div style={{ fontFamily: "'Press Start 2P', cursive", fontSize: '24px', fontWeight: 400, color: 'var(--text)' }}>{h.c}</div>
+                    <div style={{ fontFamily: "'Press Start 2P', cursive", fontSize: '7px', textTransform: 'uppercase', color: 'var(--text-muted)', marginTop: '8px' }}>{h.n}</div>
                   </div>
                 ))}
               </div>
@@ -64,14 +82,27 @@ export default function DashboardPage() {
 
           <div className="card">
             <div className="p-8">
-              <h2 className="text-xl font-bold text-[var(--text)] mb-6">📡 Recent Activity</h2>
-              <div className="space-y-3">
+              <h2 className="text-sm font-bold text-[var(--text)] mb-6"
+                  style={{ fontFamily: "'Press Start 2P', cursive", textTransform: 'uppercase' }}>
+                📡 Recent Activity
+              </h2>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {s.recent.map(r => (
-                  <div key={r.id} className="flex items-center gap-4 p-4 rounded-2xl border-2" style={{ background: r.habitat === 'forest' ? '#f0fdf4' : r.habitat === 'ocean' ? '#eff6ff' : '#f8fafc', borderColor: r.habitat === 'forest' ? '#86efac' : r.habitat === 'ocean' ? '#93c5fd' : '#cbd5e1' }}>
+                  <div key={r.id} className="flex items-center gap-4 p-4"
+                       style={{
+                         border: '4px solid var(--outline)',
+                         borderRadius: 0,
+                         background: 'var(--gb-mid)',
+                         boxShadow: '3px 3px 0 var(--outline)',
+                       }}>
                     <div className="text-2xl">{r.habitat === 'forest' ? '🌲' : r.habitat === 'ocean' ? '🌊' : '❄️'}</div>
                     <div className="flex-1 min-w-0">
-                      <div className="font-bold text-[var(--text)] text-sm">{r.species_name || 'Unknown'}</div>
-                      <div className="text-xs text-[var(--text-muted)] font-semibold">{r.location} · {r.reporter_name}</div>
+                      <div style={{ fontFamily: "'Press Start 2P', cursive", fontSize: '9px', textTransform: 'uppercase', color: 'var(--text)' }}>
+                        {r.species_name || 'Unknown'}
+                      </div>
+                      <div style={{ fontFamily: "'VT323', monospace", fontSize: '16px', color: 'var(--text-muted)', marginTop: '2px' }}>
+                        {r.location} · {r.reporter_name}
+                      </div>
                     </div>
                   </div>
                 ))}

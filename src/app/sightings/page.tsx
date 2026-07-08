@@ -17,38 +17,62 @@ export default function SightingsPage() {
           <div className="flex items-center justify-between mb-10">
             <div>
               <div className="badge badge-pink mb-2">📡 Community</div>
-              <h1 className="text-[clamp(2.5rem,5vw,3.5rem)] text-[var(--text)] mt-2">Sightings</h1>
+              <h1 className="text-[clamp(1rem,3vw,1.6rem)] text-[var(--text)] mt-2"
+                  style={{ fontFamily: "'Press Start 2P', cursive", textTransform: 'uppercase' }}>
+                Sightings
+              </h1>
             </div>
             <a href="/sightings/new" className="btn btn-green">📸 Report</a>
           </div>
 
           {loading ? (
-            <div className="text-center py-20 text-[var(--text-muted)] font-bold">Loading... ⏳</div>
+            <div className="text-center py-20"
+                 style={{ fontFamily: "'VT323', monospace", fontSize: '24px', color: 'var(--text-muted)' }}>
+              Loading... ⏳
+            </div>
           ) : data.length === 0 ? (
             <div className="text-center py-20">
               <div className="text-6xl mb-4">🐾</div>
-              <h3 className="text-xl font-bold text-[var(--text)] mb-2">No sightings yet!</h3>
-              <p className="text-[var(--text-secondary)] font-semibold mb-6">Be the first to report a wildlife sighting. 🌿</p>
+              <h3 className="text-sm font-bold text-[var(--text)] mb-2"
+                  style={{ fontFamily: "'Press Start 2P', cursive", textTransform: 'uppercase' }}>
+                No sightings yet!
+              </h3>
+              <p style={{ fontFamily: "'VT323', monospace", fontSize: '20px', color: 'var(--text-soft)', marginBottom: '24px' }}>
+                Be the first to report a wildlife sighting. 🌿
+              </p>
               <a href="/sightings/new" className="btn btn-green">📸 Report a Sighting</a>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {data.map(s => (
-                <div key={s.id} className="card group">
+                <div key={s.id} className="card">
                   <div className="flex items-center gap-4 px-5 py-4">
-                    <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shrink-0 border-2"
-                         style={{ background: s.habitat === 'forest' ? '#dcfce7' : s.habitat === 'ocean' ? '#dbeafe' : '#f1f5f9', borderColor: s.habitat === 'forest' ? '#86efac' : s.habitat === 'ocean' ? '#93c5fd' : '#cbd5e1' }}>
+                    <div style={{
+                      width: 48, height: 48,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: '24px', flexShrink: 0,
+                      border: '4px solid var(--outline)',
+                      borderRadius: 0,
+                      background: 'var(--gb-mid)',
+                      boxShadow: '3px 3px 0 var(--outline)',
+                    }}>
                       {s.habitat === 'forest' ? '🐅' : s.habitat === 'ocean' ? '🐋' : '🐆'}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-0.5">
-                        <span className="font-bold text-[var(--text)] text-sm">{s.species_name || 'Unknown'}</span>
+                        <span style={{ fontFamily: "'Press Start 2P', cursive", fontSize: '9px', textTransform: 'uppercase', color: 'var(--text)' }}>
+                          {s.species_name || 'Unknown'}
+                        </span>
                         <span className={`tag ${s.status === 'verified' ? 'tag-safe' : 'tag-vulnerable'}`}>{s.status}</span>
                       </div>
-                      <div className="text-xs text-[var(--text-muted)] font-semibold">{s.location}{s.notes ? ` · ${s.notes}` : ''}</div>
+                      <div style={{ fontFamily: "'VT323', monospace", fontSize: '16px', color: 'var(--text-muted)' }}>
+                        {s.location}{s.notes ? ` · ${s.notes}` : ''}
+                      </div>
                     </div>
                     <div className="hidden sm:block text-right shrink-0">
-                      <div className="text-xs text-[var(--text-muted)] font-bold">{s.reporter_name}</div>
+                      <div style={{ fontFamily: "'VT323', monospace", fontSize: '16px', color: 'var(--text-muted)', fontWeight: 700 }}>
+                        {s.reporter_name}
+                      </div>
                     </div>
                   </div>
                 </div>
