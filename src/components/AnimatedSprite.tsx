@@ -1,73 +1,80 @@
 'use client';
 
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 interface AnimatedSpriteProps {
-  sheetSrc: string;
+  /** Base path to sprite directory (e.g. '/pixel/tiger') */
+  basePath: string;
   alt?: string;
   size?: number;
   eating?: boolean;
-  cols?: number;
-  rows?: number;
   className?: string;
 }
 
-// Animation states with slow, natural speeds
-const ANIMATIONS: Record<string, { startFrame: number; count: number; speed: number }> = {
-  idle:    { startFrame: 0, count: 4, speed: 900 },
-  walk:    { startFrame: 4, count: 6, speed: 250 },
-  eat:     { startFrame: 10, count: 4, speed: 400 },
-  happy:   { startFrame: 14, count: 4, speed: 350 },
-  hurt:    { startFrame: 18, count: 2, speed: 300 },
-  special: { startFrame: 20, count: 4, speed: 450 },
+// Animation configs: filename → { frames, speed }
+const ANIM_CONFIG: Record<string, { frames: number; speed: number }> = {
+  idle:       { frames: 9, speed: 900 },
+  walk:       { frames: 9, speed: 200 },
+  run:        { frames: 8, speed: 150 },
+  eat:        { frames: 6, speed: 400 },
+  attack:     { frames: 5, speed: 250 },
+  climb:      { frames: 5, speed: 300 },
+  jump:       { frames: 7, speed: 200 },
+  hurt:       { frames: 4, speed: 300 },
+  die:        { frames: 3, speed: 500 },
+  expressions:{ frames: 7, speed: 400 },
 };
 
+const FRAME_SIZE = 160; // canvas size per frame
+
 export default function AnimatedSprite({
-  sheetSrc,
+  basePath,
   alt = 'Sprite',
   size = 200,
   eating = false,
-  cols = 6,
-  rows = 4,
   className = '',
 }: AnimatedSpriteProps) {
-  const [currentFrame, setCurrentFrame] = useState(0);
-  const [animState, setAnimState] = useState<string>('idle');
+  const [animState, setAnimState] = useState('idle');
+  const [frame, setFrame] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const eatTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Switch to eating when prop changes
+  // Switch to eating
   useEffect(() => {
     if (eating) {
       setAnimState('eat');
-      const eatAnim = ANIMATIONS.eat;
-      setTimeout(() => setAnimState('idle'), eatAnim.speed * eatAnim.count);
+      if (eatTimeoutRef.current) clearTimeout(eatTimeoutRef.current);
+      eatTimeoutRef.current = setTimeout(() => setAnimState('idle'), 2500);
     }
+    return () => {
+      if (eatTimeoutRef.current) clearTimeout(eatTimeoutRef.current);
+    };
   }, [eating]);
 
   // Animation loop
   useEffect(() => {
-    const anim = ANIMATIONS[animState] || ANIMATIONS.idle;
-    const frames = Array.from({ length: anim.count }, (_, i) => anim.startFrame + i);
-
-    let frameIdx = 0;
-    setCurrentFrame(frames[0]);
+    const config = ANIM_CONFIG[animState] || ANIM_CONFIG.idle;
+    let idx = 0;
+    setFrame(0);
 
     if (timerRef.current) clearInterval(timerRef.current);
     timerRef.current = setInterval(() => {
-      frameIdx = (frameIdx + 1) % frames.length;
-      setCurrentFrame(frames[frameIdx]);
-    }, anim.speed);
+      idx = (idx + 1) % config.frames;
+      setFrame(idx);
+    }, config.speed);
 
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
   }, [animState]);
 
-  // Background position calculation
-  const col = currentFrame % cols;
-  const row = Math.floor(currentFrame / cols);
-  const bgX = cols > 1 ? (col / (cols - 1)) * 100 : 0;
-  const bgY = rows > 1 ? (row / (rows - 1)) * 100 : 0;
+  const config = ANIM_CONFIG[animState] || ANIM_CONFIG.idle;
+  const sheetSrc = `${basePath}/${animState}.png`;
+  const sheetWidth = FRAME_SIZE * config.frames;
+  const sheetHeight = FRAME_SIZE;
+
+  // Background position for horizontal strip
+  const bgX = config.frames > 1 ? (frame / (config.frames - 1)) * 100 : 0;
 
   return (
     <div
@@ -76,15 +83,15 @@ export default function AnimatedSprite({
         width: size,
         height: size,
         backgroundImage: `url(${sheetSrc})`,
-        backgroundSize: `${cols * 100}% ${rows * 100}%`,
-        backgroundPosition: `${bgX}% ${bgY}%`,
+        backgroundSize: `${(sheetWidth / FRAME_SIZE) * 100}% 100%`,
+        backgroundPosition: `${bgX}% 0%`,
         backgroundRepeat: 'no-repeat',
         imageRendering: 'pixelated',
         cursor: 'pointer',
       }}
       onClick={() => {
-        setAnimState('happy');
-        setTimeout(() => setAnimState('idle'), ANIMATIONS.happy.speed * ANIMATIONS.happy.count);
+        setAnimState('expressions');
+        setTimeout(() => setAnimState('idle'), 3000);
       }}
       onMouseEnter={() => {
         if (!eating) setAnimState('walk');

@@ -16,16 +16,13 @@ const statusMap: Record<string, { l: string; c: string }> = {
 
 const bg: Record<string, string> = { forest: '#dcfce7', ocean: '#dbeafe', arctic: '#f1f5f9', savanna: '#ffedd5', rainforest: '#fef9c3' };
 
-// ChatGPT-generated sprite sheets (high quality)
-const CHATGPT_SHEETS: Record<string, string> = {
-  'Sumatran Tiger': '/pixel/tiger_sheet_chatgpt.png',
+// ChatGPT-generated sprite sheets (high quality, per-animation)
+const SPRITE_PATHS: Record<string, string> = {
+  'Sumatran Tiger': '/pixel/tiger',
 };
 
-function getSpriteSheet(name: string, image: string | null): string | null {
-  // Prefer ChatGPT sheets
-  if (CHATGPT_SHEETS[name]) return CHATGPT_SHEETS[name];
-  if (!image) return null;
-  return image.replace('/thumbs/', '/sheets/').replace('_thumb.webp', '_sheet.png');
+function getSpriteBasePath(name: string): string | null {
+  return SPRITE_PATHS[name] || null;
 }
 
 export default function SpeciesDetailPage() {
@@ -60,7 +57,7 @@ export default function SpeciesDetailPage() {
   );
 
   const st = statusMap[species.status] || statusMap.least_concern;
-  const spriteSheet = getSpriteSheet(species.name, species.image);
+  const spriteBasePath = getSpriteBasePath(species.name);
 
   return (
     <div className="pattern-dots min-h-screen">
@@ -122,7 +119,7 @@ export default function SpeciesDetailPage() {
               <FeedZone
                 speciesId={species.id}
                 speciesName={species.name}
-                spriteSheet={spriteSheet}
+                spriteBasePath={spriteBasePath}
               />
             </div>
           </div>

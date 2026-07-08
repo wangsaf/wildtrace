@@ -21,10 +21,10 @@ const FOODS: FoodItem[] = [
 interface FeedZoneProps {
   speciesId: number;
   speciesName: string;
-  spriteSheet: string | null;
+  spriteBasePath: string | null;
 }
 
-export default function FeedZone({ speciesId, speciesName, spriteSheet }: FeedZoneProps) {
+export default function FeedZone({ speciesId, speciesName, spriteBasePath }: FeedZoneProps) {
   const [cooldown, setCooldown] = useState(false);
   const [message, setMessage] = useState('');
   const [dragOver, setDragOver] = useState(false);
@@ -115,9 +115,9 @@ export default function FeedZone({ speciesId, speciesName, spriteSheet }: FeedZo
         ))}
 
         {/* The character */}
-        {spriteSheet ? (
+        {spriteBasePath ? (
           <AnimatedSprite
-            sheetSrc={spriteSheet}
+            basePath={spriteBasePath}
             alt={speciesName}
             size={200}
             eating={eating}
