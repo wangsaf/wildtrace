@@ -75,11 +75,11 @@ export default function SpeciesPage() {
                         <span className="text-5xl group-hover:scale-125 transition-transform duration-300">{emoji[s.habitat] || '🐾'}</span>
                         <span className={`tag ${st.c}`}>{st.l}</span>
                       </div>
-                      <h3 className="text-lg font-extrabold text-[var(--text)] mb-0.5">{s.name}</h3>
+                      <h3 className="text-lg font-bold text-[var(--text)] mb-0.5">{s.name}</h3>
                       <p className="text-xs text-[var(--text-muted)] font-bold italic mb-3">{s.scientific_name}</p>
                       <p className="text-sm text-[var(--text-secondary)] font-semibold line-clamp-2 mb-4">{s.description}</p>
                       <div className="flex items-center justify-between pt-3 border-t-2 border-[var(--border)]">
-                        <span className="text-xs font-extrabold capitalize" style={{ color: s.habitat === 'forest' ? '#15803d' : s.habitat === 'ocean' ? '#1d4ed8' : '#475569' }}>{s.habitat}</span>
+                        <span className="text-xs font-bold capitalize" style={{ color: s.habitat === 'forest' ? '#15803d' : s.habitat === 'ocean' ? '#1d4ed8' : '#475569' }}>{s.habitat}</span>
                         <span className="text-xs text-[var(--text-muted)] font-bold">Pop: {s.population?.toLocaleString() || '?'}</span>
                       </div>
                     </div>

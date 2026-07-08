@@ -45,7 +45,7 @@ export default function DashboardPage() {
 
           <div className="card mb-8">
             <div className="p-8">
-              <h2 className="text-xl font-extrabold text-[var(--text)] mb-6">🗺️ Habitat Breakdown</h2>
+              <h2 className="text-xl font-bold text-[var(--text)] mb-6">🗺️ Habitat Breakdown</h2>
               <div className="grid grid-cols-3 gap-4">
                 {[
                   { n: 'Forest', e: '🌲', c: s.recent.filter(x => x.habitat === 'forest').length, bg: '#dcfce7', border: '#86efac' },
@@ -54,7 +54,7 @@ export default function DashboardPage() {
                 ].map(h => (
                   <div key={h.n} className="text-center p-5 rounded-2xl border-2" style={{ background: h.bg, borderColor: h.border }}>
                     <div className="text-3xl mb-2">{h.e}</div>
-                    <div className="text-3xl font-extrabold text-[var(--text)]">{h.c}</div>
+                    <div className="text-3xl font-bold text-[var(--text)]">{h.c}</div>
                     <div className="text-xs text-[var(--text-muted)] font-bold mt-1">{h.n}</div>
                   </div>
                 ))}
@@ -64,7 +64,7 @@ export default function DashboardPage() {
 
           <div className="card">
             <div className="p-8">
-              <h2 className="text-xl font-extrabold text-[var(--text)] mb-6">📡 Recent Activity</h2>
+              <h2 className="text-xl font-bold text-[var(--text)] mb-6">📡 Recent Activity</h2>
               <div className="space-y-3">
                 {s.recent.map(r => (
                   <div key={r.id} className="flex items-center gap-4 p-4 rounded-2xl border-2" style={{ background: r.habitat === 'forest' ? '#f0fdf4' : r.habitat === 'ocean' ? '#eff6ff' : '#f8fafc', borderColor: r.habitat === 'forest' ? '#86efac' : r.habitat === 'ocean' ? '#93c5fd' : '#cbd5e1' }}>

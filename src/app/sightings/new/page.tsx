@@ -25,7 +25,7 @@ export default function NewSightingPage() {
       <div className="pattern-dots min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="text-7xl mb-6 anim-bounce">🎉</div>
-          <h2 className="text-3xl font-extrabold text-[var(--text)] mb-2">Sighting Reported!</h2>
+          <h2 className="text-3xl font-bold text-[var(--text)] mb-2">Sighting Reported!</h2>
           <p className="text-[var(--text-secondary)] font-semibold">Thank you for helping wildlife conservation! 🌿</p>
         </div>
       </div>
@@ -43,22 +43,22 @@ export default function NewSightingPage() {
           <form onSubmit={handleSubmit} className="card">
             <div className="p-8 space-y-6">
               <div>
-                <label className="block text-xs font-extrabold text-[var(--text-secondary)] mb-2 uppercase tracking-wider">👤 Your Name *</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] mb-2 uppercase tracking-wider">👤 Your Name *</label>
                 <input required value={form.reporter_name} onChange={e => setForm({ ...form, reporter_name: e.target.value })} className="input" placeholder="What's your name?" />
               </div>
               <div>
-                <label className="block text-xs font-extrabold text-[var(--text-secondary)] mb-2 uppercase tracking-wider">🦁 Species *</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] mb-2 uppercase tracking-wider">🦁 Species *</label>
                 <select required value={form.species_id} onChange={e => setForm({ ...form, species_id: e.target.value })} className="input">
                   <option value="">Pick a species...</option>
                   {species.map((s: any) => <option key={s.id} value={s.id}>{s.name}</option>)}
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-extrabold text-[var(--text-secondary)] mb-2 uppercase tracking-wider">📍 Location *</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] mb-2 uppercase tracking-wider">📍 Location *</label>
                 <input required value={form.location} onChange={e => setForm({ ...form, location: e.target.value })} className="input" placeholder="Where did you see it?" />
               </div>
               <div>
-                <label className="block text-xs font-extrabold text-[var(--text-secondary)] mb-2 uppercase tracking-wider">📝 Notes</label>
+                <label className="block text-xs font-bold text-[var(--text-secondary)] mb-2 uppercase tracking-wider">📝 Notes</label>
                 <textarea value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} rows={4} className="input resize-none" placeholder="Tell us what you saw..." />
               </div>
               <button type="submit" disabled={loading} className="btn btn-green w-full !py-4 text-lg disabled:opacity-50">

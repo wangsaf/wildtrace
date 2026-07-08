@@ -27,7 +27,7 @@ export default function SightingsPage() {
           ) : data.length === 0 ? (
             <div className="text-center py-20">
               <div className="text-6xl mb-4">🐾</div>
-              <h3 className="text-xl font-extrabold text-[var(--text)] mb-2">No sightings yet!</h3>
+              <h3 className="text-xl font-bold text-[var(--text)] mb-2">No sightings yet!</h3>
               <p className="text-[var(--text-secondary)] font-semibold mb-6">Be the first to report a wildlife sighting. 🌿</p>
               <a href="/sightings/new" className="btn btn-green">📸 Report a Sighting</a>
             </div>
